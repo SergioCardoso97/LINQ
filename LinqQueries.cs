@@ -69,5 +69,86 @@ namespace LINQ
             //query expresion
             return from l in librosColletion where l.PageCount > 450 orderby l.PageCount descending select l;
         }
+        public IEnumerable<Book> OperatorTakeFirstBooks()
+        {
+            //extension method
+            //return librosColletion.Where(x => x.Categories.Contains("Java")).OrderByDescending(x => x.PublishedDate).Take(3);
+            //query expresion
+            return (from l in librosColletion where l.Categories.Contains("Java") orderby l.PublishedDate descending select l).Take(3);
+        }
+        public IEnumerable<Book> OperatorSkipBooks()
+        {
+            //extension method
+            //return librosColletion.Where(x => x.PageCount > 400).OrderByDescending(x => x.PageCount).Take(4).Skip(2);
+            //query expresion
+            return (from l in librosColletion where l.PageCount > 400 orderby l.PageCount descending select l).Take(4).Skip(2);
+        }
+        public IEnumerable<Book> OperatorSelect()
+        {
+            return librosColletion.Take(3).Select(x => new Book(){Title= x.Title, PageCount= x.PageCount});
+        }
+        public int OperadorCount()
+        {
+            //extension method
+            //return librosColletion.Count(x => x.PageCount >= 200 && x.PageCount <=500);
+            //query expresion
+            return (from l in librosColletion where l.PageCount >= 200 && l.PageCount <=500 select l).Count();
+        }
+        public DateTime OperadorMin()
+        {
+            return librosColletion.Min(x => x.PublishedDate);
+        }
+        public int OperadorMax()
+        {
+            return librosColletion.Max(x => x.PageCount);
+        }
+        public Book OperadorMinBy()
+        {
+            return librosColletion.Where(x => x.PageCount > 0).MinBy(x => x.PageCount);
+        }
+        public Book OperadorMaxBy()
+        {
+            return librosColletion.MaxBy(x => x.PublishedDate);
+        }
+        public int OperadorSum()
+        {
+            return librosColletion.Where(x => x.PageCount >= 0 && x.PageCount <= 500).Sum(x => x.PageCount);
+        }
+        public string OperadorAgregate()
+        {
+            return librosColletion.Where(x => x.PublishedDate.Year >= 2015).Aggregate("", (TitulosLibros, next) => {
+                if (TitulosLibros != string.Empty)
+                {
+                    TitulosLibros += "-" + next.Title;
+                }
+                else
+                {
+                    TitulosLibros +=  next.Title;
+                }
+                return TitulosLibros;
+            });
+        }
+        public double PromedioCaracteresTitulo()
+        {
+            return librosColletion.Average(x => x.Title.Length);
+        }
+        public double PromedioNumeroPaginas()
+        {
+            return librosColletion.Where(x => x.PageCount > 0).Average(x => x.PageCount);
+        }
+        public IEnumerable<IGrouping<int,Book>> OperadorGroupBy()
+        {
+            return librosColletion.Where(x => x.PublishedDate.Year > 2000).OrderBy(x => x.PublishedDate).GroupBy(x => x.PublishedDate.Year);
+        }
+        public ILookup<char, Book> OperadorLookUp()
+        {
+            return librosColletion.ToLookup(x => x.Title[0], x => x);
+        }
+        public IEnumerable<Book> OperadorJoin()
+        {
+            var mas500 = librosColletion.Where(x => x.PageCount > 500);
+            var despues2005 = librosColletion.Where(x => x.PublishedDate.Year > 2005);
+            return mas500.Join(despues2005, p => p.Title, x => x.Title, (p, x) => p);
+        }
     }    
 }
